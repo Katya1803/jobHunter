@@ -3,6 +3,7 @@ package vn.project.jobhunter.exception;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -22,7 +23,7 @@ public class GlobalException {
             BadCredentialsException.class
     })
     public ResponseEntity<RestResponse<Object>> handleIdException(Exception ex) {
-        RestResponse<Object> res = new RestResponse<Object>();
+        RestResponse<Object> res = new RestResponse<>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
         res.setError(ex.getMessage());
         res.setMessage("Exception occurs...");
@@ -34,11 +35,11 @@ public class GlobalException {
         BindingResult result = ex.getBindingResult();
         final List<FieldError> fieldErrors = result.getFieldErrors();
 
-        RestResponse<Object> res = new RestResponse<Object>();
+        RestResponse<Object> res = new RestResponse<>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
         res.setError(ex.getBody().getDetail());
 
-        List<String> errors = fieldErrors.stream().map(f -> f.getDefaultMessage()).collect(Collectors.toList());
+        List<String> errors = fieldErrors.stream().map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.toList());
         res.setMessage(errors.size() > 1 ? errors : errors.get(0));
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);

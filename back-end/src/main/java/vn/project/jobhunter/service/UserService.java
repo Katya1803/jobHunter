@@ -27,10 +27,7 @@ public class UserService {
 
     public User fetchUserById(long id) {
         Optional<User> userOptional = this.userRepository.findById(id);
-        if (userOptional.isPresent()) {
-            return userOptional.get();
-        }
-        return null;
+        return userOptional.orElse(null);
     }
 
     public List<User> fetchAllUser() {

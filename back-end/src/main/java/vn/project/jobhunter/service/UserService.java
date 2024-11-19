@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import vn.project.jobhunter.domain.model.Meta;
 import vn.project.jobhunter.domain.model.User;
 import vn.project.jobhunter.domain.res.*;
 import vn.project.jobhunter.repository.UserRepository;
@@ -99,6 +100,8 @@ public class UserService {
     public User getUserByRefreshTokenAndEmail(String token, String email) {
         return this.userRepository.findByRefreshTokenAndEmail(token, email);
     }
+
+
 
     //Models Mapper
     public ResUserDTO convertToResUserDTO(User user) {

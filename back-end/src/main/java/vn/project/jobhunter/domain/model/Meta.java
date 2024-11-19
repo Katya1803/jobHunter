@@ -1,4 +1,4 @@
-package vn.project.jobhunter.domain.res;
+package vn.project.jobhunter.domain.model;
 
 import lombok.Getter;
 import lombok.Setter;

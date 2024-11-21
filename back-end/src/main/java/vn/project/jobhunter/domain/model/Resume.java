@@ -1,57 +1,49 @@
 package vn.project.jobhunter.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
-import vn.project.jobhunter.util.enumerates.GenderEnum;
+import lombok.Getter;
+import lombok.Setter;
 import vn.project.jobhunter.util.SecurityUtil;
+import vn.project.jobhunter.util.enumerates.ResumeStateEnum;
 
 import java.time.Instant;
-import java.util.List;
 
-@Data
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "resumes")
+@Getter
+@Setter
+public class Resume {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String name;
-
     @NotBlank(message = "email không được để trống")
     private String email;
 
-    @NotBlank(message = "password không được để trống")
-    private String password;
-
-    private int age;
+    @NotBlank(message = "url không được để trống (upload cv chưa thành công)")
+    private String url;
 
     @Enumerated(EnumType.STRING)
-    private GenderEnum gender;
-
-    private String address;
-
-    @Column(columnDefinition = "MEDIUMTEXT")
-    private String refreshToken;
+    private ResumeStateEnum status;
 
     private Instant createdAt;
     private Instant updatedAt;
+
     private String createdBy;
     private String updatedBy;
 
     @ManyToOne
-    @JoinColumn(name = "company_id")
-    private Company company;
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    @JsonIgnore
-    List<Resume> resumes;
+    @ManyToOne
+    @JoinColumn(name = "job_id")
+    private Job job;
 
     @PrePersist
     public void handleBeforeCreate() {
-        this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
+        this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent()
                 ? SecurityUtil.getCurrentUserLogin().get()
                 : "";
 
@@ -60,10 +52,11 @@ public class User {
 
     @PreUpdate
     public void handleBeforeUpdate() {
-        this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
+        this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent()
                 ? SecurityUtil.getCurrentUserLogin().get()
                 : "";
 
         this.updatedAt = Instant.now();
     }
+
 }

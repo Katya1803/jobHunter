@@ -1,4 +1,4 @@
-package vn.project.jobhunter.domain.res;
+package vn.project.jobhunter.domain.res.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

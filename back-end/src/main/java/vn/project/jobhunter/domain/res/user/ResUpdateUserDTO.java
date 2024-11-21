@@ -1,7 +1,7 @@
-package vn.project.jobhunter.domain.res;
+package vn.project.jobhunter.domain.res.user;
 
 import lombok.Data;
-import vn.project.jobhunter.util.GenderEnum;
+import vn.project.jobhunter.util.enumerates.GenderEnum;
 
 import java.time.Instant;
 
@@ -13,4 +13,13 @@ public class ResUpdateUserDTO {
     private String address;
     private int age;
     private Instant updatedAt;
+
+    private CompanyUser company;
+
+
+    @Data
+    public static class CompanyUser {
+        private long id;
+        private String name;
+    }
 }

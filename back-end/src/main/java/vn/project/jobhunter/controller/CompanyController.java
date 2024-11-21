@@ -12,6 +12,8 @@ import vn.project.jobhunter.domain.res.ResultPaginationDTO;
 import vn.project.jobhunter.service.CompanyService;
 import vn.project.jobhunter.util.ApiMessage;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/v1")
 public class CompanyController {
@@ -22,9 +24,9 @@ public class CompanyController {
     }
 
     @PostMapping("/companies")
-    public ResponseEntity<?> createCompany(@Valid @RequestBody Company company) {
-        Company newCompany = companyService.hanldeCreateCompany(company);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newCompany);
+    public ResponseEntity<?> createCompany(@Valid @RequestBody Company reqCompany) {
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.companyService.handleCreateCompany(reqCompany));
     }
 
     @GetMapping("/companies")
@@ -45,5 +47,12 @@ public class CompanyController {
     public ResponseEntity<Void> deleteCompany(@PathVariable("id") long id) {
         this.companyService.handleDeleteCompany(id);
         return ResponseEntity.ok(null);
+    }
+
+    @GetMapping("/companies/{id}")
+    @ApiMessage("fetch company by id")
+    public ResponseEntity<Company> fetchCompanyById(@PathVariable("id") long id) {
+        Optional<Company> cOptional = this.companyService.findById(id);
+        return ResponseEntity.ok().body(cOptional.get());
     }
 }

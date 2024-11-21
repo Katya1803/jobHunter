@@ -7,26 +7,35 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.project.jobhunter.domain.model.Company;
 import vn.project.jobhunter.domain.model.Meta;
+import vn.project.jobhunter.domain.model.User;
 import vn.project.jobhunter.domain.res.ResultPaginationDTO;
 import vn.project.jobhunter.repository.CompanyRepository;
+import vn.project.jobhunter.repository.UserRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class CompanyService {
+
     private final CompanyRepository companyRepository;
-    public CompanyService(CompanyRepository companyRepository) {
+    private final UserRepository userRepository;
+
+    public CompanyService(
+            CompanyRepository companyRepository,
+            UserRepository userRepository) {
         this.companyRepository = companyRepository;
+        this.userRepository = userRepository;
     }
 
-    public Company hanldeCreateCompany(@Valid Company company) {
-        return companyRepository.save(company);
+    public Company handleCreateCompany(Company c) {
+        return this.companyRepository.save(c);
     }
 
     public ResultPaginationDTO handleGetCompany(Specification<Company> spec, Pageable pageable) {
         Page<Company> pCompany = this.companyRepository.findAll(spec, pageable);
         ResultPaginationDTO rs = new ResultPaginationDTO();
-        Meta mt = new Meta();
+        ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
 
         mt.setPage(pageable.getPageNumber() + 1);
         mt.setPageSize(pageable.getPageSize());
@@ -39,20 +48,32 @@ public class CompanyService {
         return rs;
     }
 
-    public Company handleUpdateCompany(Company company) {
-        Optional<Company> companyOptional = this.companyRepository.findById(company.getId());
+    public Company handleUpdateCompany(Company c) {
+        Optional<Company> companyOptional = this.companyRepository.findById(c.getId());
         if (companyOptional.isPresent()) {
             Company currentCompany = companyOptional.get();
-            currentCompany.setLogo(company.getLogo());
-            currentCompany.setName(company.getName());
-            currentCompany.setDescription(company.getDescription());
-            currentCompany.setAddress(company.getAddress());
+            currentCompany.setLogo(c.getLogo());
+            currentCompany.setName(c.getName());
+            currentCompany.setDescription(c.getDescription());
+            currentCompany.setAddress(c.getAddress());
             return this.companyRepository.save(currentCompany);
         }
         return null;
     }
 
     public void handleDeleteCompany(long id) {
+        Optional<Company> comOptional = this.companyRepository.findById(id);
+        if (comOptional.isPresent()) {
+            Company com = comOptional.get();
+            // fetch all user belong to this company
+            List<User> users = this.userRepository.findByCompany(com);
+            this.userRepository.deleteAll(users);
+        }
+
         this.companyRepository.deleteById(id);
+    }
+
+    public Optional<Company> findById(long id) {
+        return this.companyRepository.findById(id);
     }
 }

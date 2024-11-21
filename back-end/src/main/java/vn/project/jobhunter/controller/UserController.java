@@ -11,9 +11,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import vn.project.jobhunter.domain.model.User;
-import vn.project.jobhunter.domain.res.ResCreateUserDTO;
-import vn.project.jobhunter.domain.res.ResUpdateUserDTO;
-import vn.project.jobhunter.domain.res.ResUserDTO;
+import vn.project.jobhunter.domain.res.user.ResCreateUserDTO;
+import vn.project.jobhunter.domain.res.user.ResUpdateUserDTO;
+import vn.project.jobhunter.domain.res.user.ResUserDTO;
 import vn.project.jobhunter.domain.res.ResultPaginationDTO;
 import vn.project.jobhunter.service.UserService;
 import vn.project.jobhunter.exception.IdInvalidException;
@@ -23,6 +23,7 @@ import vn.project.jobhunter.util.ApiMessage;
 @RequestMapping("/api/v1")
 public class UserController {
     private final UserService userService;
+
     private final PasswordEncoder passwordEncoder;
 
     public UserController(UserService userService, PasswordEncoder passwordEncoder) {
@@ -42,8 +43,8 @@ public class UserController {
 
         String hashPassword = this.passwordEncoder.encode(postManUser.getPassword());
         postManUser.setPassword(hashPassword);
-        User newUser = this.userService.handleCreateUser(postManUser);
-        return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.convertToResCreateUserDTO(newUser));
+        User ericUser = this.userService.handleCreateUser(postManUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.convertToResCreateUserDTO(ericUser));
     }
 
     @DeleteMapping("/users/{id}")
@@ -59,7 +60,6 @@ public class UserController {
         return ResponseEntity.ok(null);
     }
 
-
     @GetMapping("/users/{id}")
     @ApiMessage("fetch user by id")
     public ResponseEntity<ResUserDTO> getUserById(@PathVariable("id") long id) throws IdInvalidException {
@@ -74,7 +74,7 @@ public class UserController {
 
     // fetch all users
     @GetMapping("/users")
-    @ApiMessage("Fetch all users")
+    @ApiMessage("fetch all users")
     public ResponseEntity<ResultPaginationDTO> getAllUser(
             @Filter Specification<User> spec,
             Pageable pageable) {
@@ -86,11 +86,12 @@ public class UserController {
     @PutMapping("/users")
     @ApiMessage("Update a user")
     public ResponseEntity<ResUpdateUserDTO> updateUser(@RequestBody User user) throws IdInvalidException {
-        User existedUser = this.userService.handleUpdateUser(user);
-        if (existedUser == null) {
+        User ericUser = this.userService.handleUpdateUser(user);
+        if (ericUser == null) {
             throw new IdInvalidException("User với id = " + user.getId() + " không tồn tại");
         }
-        return ResponseEntity.ok(this.userService.convertToResUpdateUserDTO(existedUser));
+        return ResponseEntity.ok(this.userService.convertToResUpdateUserDTO(ericUser));
     }
 
 }
+

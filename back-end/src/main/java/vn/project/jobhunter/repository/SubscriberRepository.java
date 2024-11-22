@@ -9,5 +9,7 @@ import vn.project.jobhunter.domain.model.Subscriber;
 public interface SubscriberRepository extends JpaRepository<Subscriber, Long>,
         JpaSpecificationExecutor<Subscriber> {
 
+    Subscriber findByEmail(String email);
+
     boolean existsByEmail(String email);
 }

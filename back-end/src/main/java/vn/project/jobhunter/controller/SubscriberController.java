@@ -13,6 +13,7 @@ import vn.project.jobhunter.domain.model.Subscriber;
 import vn.project.jobhunter.exception.IdInvalidException;
 import vn.project.jobhunter.service.SubscriberService;
 import vn.project.jobhunter.util.ApiMessage;
+import vn.project.jobhunter.util.SecurityUtil;
 
 
 @RestController
@@ -47,4 +48,13 @@ public class SubscriberController {
         return ResponseEntity.ok().body(this.subscriberService.update(subsDB, subsRequest));
     }
 
+    @PostMapping("/subscribers/skills")
+    @ApiMessage("Get subscriber's skill")
+    public ResponseEntity<Subscriber> getSubscribersSkill() throws IdInvalidException {
+        String email = SecurityUtil.getCurrentUserLogin().isPresent()
+                ? SecurityUtil.getCurrentUserLogin().get()
+                : "";
+
+        return ResponseEntity.ok().body(this.subscriberService.findByEmail(email));
+    }
 }
